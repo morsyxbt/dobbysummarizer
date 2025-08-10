@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>URL Summarizer</title>
+  <style>
+    body {
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .main-box {
+      background: rgba(0,0,0,0.85);
+      padding: 2.2rem 2.5rem;
+      border-radius: 18px;
+      max-width: 430px;
+      width: 100%;
+      box-shadow: 0 0 38px 0 #000b;
+      border: 2.5px solid #fff;
+      z-index: 2;
+      position: relative;
+    }
+    h1 {
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: .02em;
+      margin-top: 0;
+      margin-bottom: 1.2rem;
+      text-align: center;
+      font-size: 2.0rem;
+    }
+    p {
+      color: #eee;
+      margin-bottom: 1.1rem;
+      text-align: center;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.3rem;
+      gap: 0.7rem;
+    }
+    .input-row img {
+      height: 36px;
+      width: 36px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #fff2;
+      border: 1.5px solid #fff3;
+      display: block;
+      box-shadow: 0 0 7px #0003;
+    }
+    input[type="url"] {
+      flex: 1;
+      border-radius: 8px;
+      border: 1.5px solid #fff;
+      padding: 0.7rem 1rem;
+      font-size: 16px;
+      background: #181818;
+      color: #fff;
+      outline: none;
+      font-family: inherit;
+      transition: border 0.18s;
+      min-width: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    input[type="url"]:focus {
+      border: 1.5px solid #ccc;
+    }
+
+    .summary-types {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+    }
+    .summary-types label {
+      font-weight: 500;
+      cursor: pointer;
+      color: #fff;
+      font-size: 1rem;
+      letter-spacing: .01em;
+    }
+    .summary-types input[type="radio"] {
+      accent-color: #fff;
+      margin-right: 0.4em;
+    }
+    button {
+      width: 100%;
+      padding: .8rem 0;
+      background: #fff;
+      color: #181818;
+      font-weight: 700;
+      font-size: 17px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 1.4rem;
+      margin-top: 0.3rem;
+      box-shadow: 0 0 14px #fff2;
+      transition: background 0.15s, color 0.15s;
+    }
+    button:disabled {
+      background: #bbb;
+      color: #fff;
+      cursor: not-allowed;
+    }
+    .summary-box {
+      background: #181818;
+      color: #fff;
+      border-radius: 10px;
+      min-height: 70px;
+      font-size: 15.5px;
+      padding: 1.2em 1em;
+      border: 1.5px solid #fff2;
+      white-space: pre-wrap;
+      text-align: left;
+      word-break: break-word;
+    }
+    .summary-box.has-summary {
+      border: 1.5px solid #fff;
+    }
+    @media (max-width: 600px) {
+      .main-box { padding: 1.2rem 0.7rem; max-width: 98vw;}
+      h1 { font-size: 1.2rem; }
+      .input-row img { height: 28px; width: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-box">
+    <h1>URL Summarizer</h1>
+    <p>Paste any article or website URL below and get a quick summary using Dobby 70B.</p>
+    <div class="input-row">
+      <img src="image.png" alt="Logo" />
+      <input type="url" id="input" placeholder="Paste a URL here (https://...)" autocomplete="off" required>
+    </div>
+    <div class="summary-types">
+      <label>
+        <input type="radio" name="stype" value="tweet" checked>
+        Tweet-length
+      </label>
+      <label>
+        <input type="radio" name="stype" value="paragraph">
+        Paragraph
+      </label>
+      <label>
+        <input type="radio" name="stype" value="page">
+        Page
+      </label>
+    </div>
+    <button id="summarizeBtn">Summarize</button>
+    <div class="summary-box" id="output"><span style="color:#fff7">Your summary will appear here.</span></div>
+  </div>
+  <script>
+    // <<<--- PUT YOUR API KEY HERE --- >>>
+    const API_KEY = "fw_3ZX3Lze3YKeMvfGPWzLgxuWh";
+    const API_URL = "https://api.fireworks.ai/inference/v1/chat/completions";
+    const MODEL = "accounts/sentientfoundation/models/dobby-unhinged-llama-3-3-70b-new";
+
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const btn = document.getElementById('summarizeBtn');
+    let type = "tweet";
+    document.querySelectorAll('input[name="stype"]').forEach(radio => {
+      radio.onchange = e => { type = e.target.value; }
+    });
+
+    function isValidUrl(url) {
+      try {
+        new URL(url);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function buildPrompt(url, type) {
+      if (type === "tweet")
+        return `Read the content at this URL and summarize the main ideas in one tweet (max 280 characters):\n${url}`;
+      if (type === "paragraph")
+        return `Read the content at this URL and summarize the main ideas in one concise paragraph:\n${url}`;
+      // Improved, much more explicit prompt for long "Page" summary:
+      return `Read the content at this URL and write a full-page, multi-paragraph summary (at least 5 paragraphs and 350+ words). Cover all the main ideas, supporting details, and important context from the article. Use subheadings for each main section if relevant, and ensure your summary is detailed, structured, and easy to read.\n\n${url}`;
+    }
+
+    btn.onclick = async function() {
+      let url = input.value.trim();
+      if (!isValidUrl(url)) {
+        output.innerHTML = "❌ Please enter a valid URL starting with http(s)://";
+        output.classList.remove('has-summary');
+        return;
+      }
+      output.innerHTML = "Summarizing with Dobby 70B...";
+      output.classList.remove('has-summary');
+      btn.disabled = true;
+
+      const userPrompt = buildPrompt(url, type);
+
+      const payload = {
+        model: MODEL,
+        max_tokens: 16384,
+        top_p: 1,
+        top_k: 40,
+        presence_penalty: 0,
+        frequency_penalty: 0,
+        temperature: 0.6,
+        messages: [
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ]
+      };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + API_KEY,
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error("API error: " + response.status);
+        const data = await response.json();
+        const summary =
+          data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+            ? data.choices[0].message.content.trim()
+            : "No summary returned. Please try again.";
+        output.textContent = summary;
+        output.classList.add('has-summary');
+      } catch (e) {
+        output.innerHTML = "❌ Error: " + e.message + "<br>Check your API key and usage limits.";
+      }
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
