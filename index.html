@@ -146,12 +146,23 @@
   </style>
 </head>
 <body>
-  <div class="main-box">
+  <!-- API Key Modal -->
+  <div id="apiKeyModal" style="position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;">
+    <div style="background:#222;padding:2rem 2.5rem;border-radius:14px;box-shadow:0 0 28px #000b;max-width:340px;width:98vw;text-align:center;">
+      <h2 style="color:#fff;margin-bottom:1.2rem;">Enter Fireworks API Key</h2>
+      <input id="apiKeyInput" type="password" placeholder="Paste your API key" style="width:100%;padding:0.7rem 1rem;border-radius:7px;border:1.5px solid #fff;font-size:15px;background:#181818;color:#fff;margin-bottom:1rem;outline:none;" autocomplete="off">
+      <div id="apiKeyError" style="color:#ff4444;font-size:0.98em;margin-bottom:0.8rem;display:none;"></div>
+      <button id="apiKeySubmit" style="width:100%;padding:.7rem 0;background:#fff;color:#181818;font-weight:700;font-size:16px;border-radius:999px;border:none;cursor:pointer;">Continue</button>
+      <div style="color:#aaa;font-size:0.95em;margin-top:1.2em;">Your API key is never stored.</div>
+    </div>
+  </div>
+
+  <div class="main-box" id="summarizerBox" style="display:none;">
     <h1>URL Summarizer</h1>
-    <p>Paste any article or website URL below and get a quick summary using Dobby 70B Model.</p>
+    <p>Paste any article or website URL below and get a quick summary using Dobby 70B.</p>
     <div class="input-row">
       <img src="image.png" alt="Logo" />
-      <input type="url" id="input" placeholder="Paste any link here : https://..." autocomplete="off" required>
+      <input type="url" id="input" placeholder="Paste a URL here (https://...)" autocomplete="off" required>
     </div>
     <div class="summary-types">
       <label>
@@ -171,8 +182,8 @@
     <div class="summary-box" id="output"><span style="color:#fff7">Your summary will appear here.</span></div>
   </div>
   <script>
-    // <<<--- PUT YOUR API KEY HERE --- >>>
-    const API_KEY = "fw_3ZW8xKCvQGDVxtwWHX7mFV7E";
+    // API key will be provided by user at runtime
+    let API_KEY = null;
     const API_URL = "https://api.fireworks.ai/inference/v1/chat/completions";
     const MODEL = "accounts/sentientfoundation/models/dobby-unhinged-llama-3-3-70b-new";
 
@@ -254,6 +265,63 @@
       }
       btn.disabled = false;
     }
+
+    // API Key Modal Logic
+    window.onload = function() {
+      const modal = document.getElementById('apiKeyModal');
+      const summarizerBox = document.getElementById('summarizerBox');
+      const apiKeyInput = document.getElementById('apiKeyInput');
+      const apiKeySubmit = document.getElementById('apiKeySubmit');
+      const apiKeyError = document.getElementById('apiKeyError');
+
+      function showError(msg) {
+        apiKeyError.textContent = msg;
+        apiKeyError.style.display = 'block';
+      }
+      function hideError() {
+        apiKeyError.textContent = '';
+        apiKeyError.style.display = 'none';
+      }
+      apiKeySubmit.onclick = async function() {
+        const key = apiKeyInput.value.trim();
+        if (!key) {
+          showError('Please enter your API key.');
+          return;
+        }
+        apiKeySubmit.disabled = true;
+        hideError();
+        // Try a test request to validate the key
+        try {
+          const testPayload = {
+            model: MODEL,
+            max_tokens: 1,
+            messages: [{ role: "user", content: "Say hi" }]
+          };
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + key,
+              "Accept": "application/json"
+            },
+            body: JSON.stringify(testPayload)
+          });
+          if (!response.ok) {
+            throw new Error('Invalid API key or quota exceeded.');
+          }
+          API_KEY = key;
+          modal.style.display = 'none';
+          summarizerBox.style.display = '';
+        } catch (e) {
+          showError(' ' + e.message);
+        }
+        apiKeySubmit.disabled = false;
+      };
+      apiKeyInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') apiKeySubmit.click();
+      });
+    }
+
   </script>
 </body>
 </html>
