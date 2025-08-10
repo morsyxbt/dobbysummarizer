@@ -148,7 +148,7 @@
 <body>
   <div class="main-box">
     <h1>URL Summarizer</h1>
-    <p>Paste any article or website URL below and get a quick summary using New Dobby 8B Model.</p>
+    <p>Paste any article or website URL below and get a quick summary using Dobby 70B Model.</p>
     <div class="input-row">
       <img src="image.png" alt="Logo" />
       <input type="url" id="input" placeholder="Paste any link here : https://..." autocomplete="off" required>
@@ -209,7 +209,7 @@
         output.classList.remove('has-summary');
         return;
       }
-      output.innerHTML = "summarizing with New Dobby 8B Model...";
+      output.innerHTML = "summarizing with Dobby 70B Model...";
       output.classList.remove('has-summary');
       btn.disabled = true;
 
