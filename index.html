@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>URL Summarizer</title>
+  <title>Dobby Summarizer</title>
   <style>
     body {
       background: url('background.jpg') no-repeat center center fixed;
@@ -148,10 +148,10 @@
 <body>
   <div class="main-box">
     <h1>URL Summarizer</h1>
-    <p>Paste any article or website URL below and get a quick summary using Dobby 70B.</p>
+    <p>Paste any article or website URL below and get a quick summary using New Dobby 8B Model.</p>
     <div class="input-row">
       <img src="image.png" alt="Logo" />
-      <input type="url" id="input" placeholder="Paste a URL here (https://...)" autocomplete="off" required>
+      <input type="url" id="input" placeholder="Paste any link here : https://..." autocomplete="off" required>
     </div>
     <div class="summary-types">
       <label>
@@ -172,9 +172,9 @@
   </div>
   <script>
     // <<<--- PUT YOUR API KEY HERE --- >>>
-    const API_KEY = "fw_3ZX3Lze3YKeMvfGPWzLgxuWh";
+    const API_KEY = "fw_3ZW8xKCvQGDVxtwWHX7mFV7E";
     const API_URL = "https://api.fireworks.ai/inference/v1/chat/completions";
-    const MODEL = "accounts/sentientfoundation/models/dobby-unhinged-llama-3-3-70b-new";
+    const MODEL = "accounts/sentientfoundation-serverless/models/dobby-mini-unhinged-plus-llama-3-1-8b";
 
     const input = document.getElementById('input');
     const output = document.getElementById('output');
@@ -205,11 +205,11 @@
     btn.onclick = async function() {
       let url = input.value.trim();
       if (!isValidUrl(url)) {
-        output.innerHTML = "❌ Please enter a valid URL starting with http(s)://";
+        output.innerHTML = "enter a valid link starting with http(s)://";
         output.classList.remove('has-summary');
         return;
       }
-      output.innerHTML = "Summarizing with Dobby 70B...";
+      output.innerHTML = "summarizing with New Dobby 8B Model...";
       output.classList.remove('has-summary');
       btn.disabled = true;
 
@@ -250,7 +250,7 @@
         output.textContent = summary;
         output.classList.add('has-summary');
       } catch (e) {
-        output.innerHTML = "❌ Error: " + e.message + "<br>Check your API key and usage limits.";
+        output.innerHTML = "Error: " + e.message + "<br>Check your API key and usage limits.";
       }
       btn.disabled = false;
     }
