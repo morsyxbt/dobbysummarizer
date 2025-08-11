@@ -5,50 +5,57 @@
   <title>Dobby Summarizer</title>
   <style>
     body {
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      min-height: 100vh;
-      margin: 0;
-      color: #fff;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
+  background: linear-gradient(135deg, #f8e9d2 0%, #fff8ec 100%) no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  margin: 0;
+  color: #5c4326;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(255, 245, 225, 0.80);
       z-index: 0;
       pointer-events: none;
     }
     .main-box {
-      background: rgba(0,0,0,0.85);
+      background: rgba(255, 252, 245, 0.95);
       padding: 2.2rem 2.5rem;
-      border-radius: 18px;
+      border-radius: 24px;
       max-width: 430px;
       width: 100%;
-      box-shadow: 0 0 38px 0 #000b;
-      border: 2.5px solid #fff;
+      box-shadow: 0 0 38px 0 #e3cfa4;
+      border: 2.5px solid #e3cfa4;
       z-index: 2;
       position: relative;
     }
     h1 {
-      color: #fff;
+      color: #a7873b;
       font-weight: 700;
       letter-spacing: .02em;
       margin-top: 0;
       margin-bottom: 1.2rem;
       text-align: center;
       font-size: 2.0rem;
+      text-shadow: 0 2px 6px #fff8;
     }
     p {
-      color: #eee;
-      margin-bottom: 1.1rem;
-      text-align: center;
-    }
+  color: #7c664a;
+  margin-bottom: 1.1rem;
+  text-align: center;
+}
+.dobby-instruction {
+  font-weight: 600;
+  color: #7c664a;
+  font-size: 1.07rem;
+  letter-spacing: 0.01em;
+}
 
     .input-row {
       display: flex;
@@ -58,23 +65,29 @@
       gap: 0.7rem;
     }
     .input-row img {
-      height: 36px;
-      width: 36px;
-      object-fit: contain;
-      border-radius: 8px;
-      background: #fff2;
-      border: 1.5px solid #fff3;
-      display: block;
-      box-shadow: 0 0 7px #0003;
-    }
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #f8e9d2;
+  border: 1.5px solid #e3cfa4;
+  display: block;
+  box-shadow: 0 0 7px #e3cfa4;
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+.input-row:hover img, .input-row:focus-within img {
+  transform: translateY(-7px) scale(1.08);
+  box-shadow: 0 8px 24px #e3cfa488, 0 2px 8px #fff8;
+}
+
     input[type="url"] {
       flex: 1;
-      border-radius: 8px;
-      border: 1.5px solid #fff;
+      border-radius: 16px;
+      border: 1.5px solid #e3cfa4;
       padding: 0.7rem 1rem;
       font-size: 16px;
-      background: #181818;
-      color: #fff;
+      background: #fff8ec;
+      color: #5c4326;
       outline: none;
       font-family: inherit;
       transition: border 0.18s;
@@ -83,7 +96,8 @@
       box-sizing: border-box;
     }
     input[type="url"]:focus {
-      border: 1.5px solid #ccc;
+      border: 1.5px solid #a7873b;
+      background: #fff3e0;
     }
 
     .summary-types {
@@ -93,99 +107,319 @@
       justify-content: center;
     }
     .summary-types label {
-      font-weight: 500;
-      cursor: pointer;
-      color: #fff;
-      font-size: 1rem;
-      letter-spacing: .01em;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+  color: #a7873b;
+  font-size: 0.89rem;
+  letter-spacing: .01em;
+  background: #f8e9d2;
+  border-radius: 12px;
+  padding: 0.4em 1.2em;
+  border: 1.5px solid #e3cfa4;
+  transition: background 0.18s, color 0.18s, box-shadow 0.22s, transform 0.22s;
+  box-shadow: 0 2px 8px #e3cfa422;
+  overflow: hidden;
+  z-index: 1;
+}
+.summary-types label input[type="radio"] {
+  margin-right: 0.6em;
+}
+
+.summary-types label::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -90%;
+  width: 90%; height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0) 55%, rgba(255,255,255,0.36) 70%, rgba(255,255,255,0.0) 85%);
+  pointer-events: none;
+  transition: opacity 0.18s;
+  opacity: 0;
+}
+.summary-types label:hover::after, .summary-types label:focus::after {
+  animation: dobby-shine 0.7s linear 1;
+  opacity: 1;
+}
+.summary-types label:hover, .summary-types label:focus {
+  transform: translateY(-4px) scale(1.045);
+  box-shadow: 0 8px 24px #e3cfa477, 0 2px 8px #fff8;
+  background: #fffbe7;
+}
+
     }
     .summary-types input[type="radio"] {
       accent-color: #fff;
       margin-right: 0.4em;
     }
     button {
-      width: 100%;
-      padding: .8rem 0;
-      background: #fff;
-      color: #181818;
+      position: relative;
+      background: linear-gradient(90deg, #f8e9d2 0%, #fff8ec 100%);
+      color: #a7873b;
+      border: 2px solid #e3cfa4;
+      border-radius: 32px;
+      padding: 0.8em 2.2em;
+      font-size: 1.1rem;
       font-weight: 700;
-      font-size: 17px;
-      border-radius: 999px;
-      border: none;
       cursor: pointer;
-      margin-bottom: 1.4rem;
-      margin-top: 0.3rem;
-      box-shadow: 0 0 14px #fff2;
-      transition: background 0.15s, color 0.15s;
+      box-shadow: 0 4px 18px #e3cfa455, 0 1.5px 8px #fff8;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      margin-top: 0.8rem;
+      display: block;
+      width: 100%;
+      letter-spacing: .02em;
+      overflow: hidden;
+      z-index: 1;
     }
-    button:disabled {
-      background: #bbb;
-      color: #fff;
-      cursor: not-allowed;
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(120deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.2) 100%);
+      transform: skewX(-22deg);
+      transition: left 0.5s cubic-bezier(0.4,0,0.2,1);
+      z-index: 2;
+      pointer-events: none;
+    }
+    button:hover::before {
+  left: 120%;
+  transition: left 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+button:active, button:focus {
+  background: #fff3e0;
+  color: #7c664a;
+  box-shadow: 0 2px 8px #e3cfa4bb, 0 1.5px 8px #fff8;
+}
+button:hover, button:focus {
+  transform: translateY(-5px) scale(1.035);
+  box-shadow: 0 8px 24px #e3cfa477, 0 2px 8px #fff8;
+}
+
+    button span, button svg {
+      position: relative;
+      z-index: 3;
     }
     .summary-box {
-      background: #181818;
-      color: #fff;
-      border-radius: 10px;
-      min-height: 70px;
-      font-size: 15.5px;
-      padding: 1.2em 1em;
-      border: 1.5px solid #fff2;
-      white-space: pre-wrap;
-      text-align: left;
-      word-break: break-word;
-    }
+  background: linear-gradient(135deg, #fffbe7 80%, #fff8ec 100%);
+  color: #7c664a;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  min-height: 70px;
+  margin-top: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.07rem;
+  word-break: break-word;
+  box-shadow: 0 2px 12px #e3cfa422;
+  border: 1.5px solid #e3cfa4;
+  transition: border 0.18s;
+}
     .summary-box.has-summary {
       border: 1.5px solid #fff;
+    }
+    .instructions-premium {
+      background: linear-gradient(135deg, #fffbe7 80%, #fff8ec 100%);
+      border: 1.5px solid #e3cfa4;
+      border-radius: 14px;
+      box-shadow: 0 2px 18px #e3cfa422;
+      padding: 1.1rem 1.3rem 1.1rem 1.1rem;
+      margin: 1.5rem 0 0.5rem 0;
+      font-size: 1.05rem;
+      color: #a7873b;
+      position: relative;
+    }
+    .instructions-premium .instructions-header {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.13rem;
+      margin-bottom: 0.7rem;
+      color: #a7873b;
+    }
+    .instructions-premium .instructions-icon {
+      width: 1.3em;
+      height: 1.3em;
+      margin-right: 0.5em;
+      color: #e3cfa4;
+      flex-shrink: 0;
+    }
+    .instructions-premium ol {
+      margin: 0 0 0 1.4em;
+      padding: 0;
+      color: #b98a3c;
+      font-size: 1.01rem;
+    }
+    .instructions-premium a {
+      color: #7a6ad8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .instructions-premium a:hover {
+      text-decoration: underline;
+    }
+    .instructions-premium strong {
+      color: #8c5b1a;
+      font-weight: 700;
     }
     @media (max-width: 600px) {
       .main-box { padding: 1.2rem 0.7rem; max-width: 98vw;}
       h1 { font-size: 1.2rem; }
       .input-row img { height: 28px; width: 28px; }
     }
+    .modal-btn:hover, .modal-btn:focus {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px #e3cfa477, 0 2px 8px #fff8;
+    }
+    .instructions-li:hover, .instructions-li:focus {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px #e3cfa433, 0 1px 4px #fff6;
+      background: #fffbe7;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
   <!-- API Key Modal -->
-  <div id="apiKeyModal" style="position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;">
-    <div style="background:#222;padding:2rem 2.5rem;border-radius:14px;box-shadow:0 0 28px #000b;max-width:340px;width:98vw;text-align:center;">
-      <h2 style="color:#fff;margin-bottom:1.2rem;">Enter Fireworks API Key</h2>
-      <input id="apiKeyInput" type="password" placeholder="Paste your API key" style="width:100%;padding:0.7rem 1rem;border-radius:7px;border:1.5px solid #fff;font-size:15px;background:#181818;color:#fff;margin-bottom:1rem;outline:none;" autocomplete="off">
+
+
+  <div id="apiKeyModal" style="position:fixed;inset:0;z-index:1000;background:rgba(255,245,225,0.93);display:flex;align-items:center;justify-content:center;">
+    <div style="background:rgba(255,252,245,0.98);padding:2rem 2.5rem;border-radius:24px;box-shadow:0 0 28px #e3cfa4;max-width:340px;width:98vw;text-align:center;border:2px solid #e3cfa4;">
+      <div class="dobby-header" tabindex="0" style="display:flex;flex-direction:row;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8e9d2 0%,#fff8ec 100%);border-radius:20px;padding:1.1em 1.3em 1.1em 1.1em;margin-bottom:1.4em;box-shadow:0 2px 16px #e3cfa433;transition:transform 0.22s, box-shadow 0.22s;cursor:pointer;outline:none;">
+  <div style="background:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px;margin-right:1.1em;box-shadow:0 2px 8px #e3cfa433;overflow:hidden;transition:transform 0.22s;">
+    <img src="dobby.jpg" alt="Dobby Dog Logo" style="width:48px;height:48px;object-fit:cover;border-radius:12px;" />
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-start;">
+    <span style="font-size:2.0em;font-weight:900;letter-spacing:0.01em;color:#e3cfa4;text-shadow:0 2px 8px #fff8;line-height:1;">DOBBY SUMMARIZER</span>
+  </div>
+</div>
+<style>
+.dobby-header {
+  position: relative;
+  overflow: hidden;
+}
+.dobby-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 60%; height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0) 55%, rgba(255,255,255,0.27) 70%, rgba(255,255,255,0.0) 85%);
+  pointer-events: none;
+  transition: opacity 0.18s;
+  opacity: 0;
+}
+.dobby-header:hover::after, .dobby-header:focus::after {
+  animation: dobby-shine 0.7s linear 1;
+  opacity: 1;
+}
+@keyframes dobby-shine {
+  0% { left: -80%; opacity: 0.15; }
+  40% { opacity: 0.35; }
+  60% { opacity: 0.27; }
+  100% { left: 120%; opacity: 0; }
+}
+.dobby-header:hover, .dobby-header:focus {
+  transform: translateY(-7px) scale(1.035);
+  box-shadow: 0 8px 28px #e3cfa488, 0 2px 16px #fff8;
+}
+</style>
+      <input id="apiKeyInput" type="password" placeholder="Paste your API key" style="width:100%;padding:0.7rem 1rem;border-radius:16px;border:1.5px solid #e3cfa4;font-size:15px;background:#fff8ec;color:#5c4326;margin-bottom:1rem;outline:none;" autocomplete="off">
       <div id="apiKeyError" style="color:#ff4444;font-size:0.98em;margin-bottom:0.8rem;display:none;"></div>
-      <button id="apiKeySubmit" style="width:100%;padding:.7rem 0;background:#fff;color:#181818;font-weight:700;font-size:16px;border-radius:999px;border:none;cursor:pointer;">Continue</button>
-      <div style="color:#aaa;font-size:0.95em;margin-top:1.2em;">Your API key is never stored.</div>
+      <button id="apiKeySubmit" class="modal-btn" style="width:100%;padding:0.8em 2.2em;background:linear-gradient(90deg,#f8e9d2 0%,#fff8ec 100%);color:#a7873b;font-weight:700;font-size:16px;border-radius:32px;border:2px solid #e3cfa4;cursor:pointer;box-shadow:0 4px 18px #e3cfa455;transition:background 0.18s,color 0.18s,box-shadow 0.18s,transform 0.22s;letter-spacing:.02em;">Continue</button>
+      <button id="removeApiKeyBtn" class="modal-btn" style="width:100%;padding:0.7em 2em;background:transparent;color:#a7873b;font-weight:700;font-size:15px;border-radius:32px;border:2px solid #e3cfa4;cursor:pointer;box-shadow:0 2px 8px #e3cfa422;margin-top:0.7em;transition:background 0.18s,color 0.18s,box-shadow 0.18s,transform 0.22s;letter-spacing:.01em;">Remove API Key</button>
+      <div class="instructions-premium" style="margin-top:1.3em; margin-bottom:0.7em;">
+        <div class="instructions-header">
+          <svg class="instructions-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          Quick Start Guide
+        </div>
+        <ul style="margin:0;padding:0;list-style:none;text-align:left;">
+          <li class="instructions-li" style="display:flex;align-items:flex-start;margin-bottom:0.5em;font-size:0.82em;font-weight:500;color:#8c5b1a;font-family:'Segoe UI',Arial,sans-serif;letter-spacing:0.01em;text-shadow:0 1px 6px #fff7;transition:transform 0.22s,box-shadow 0.22s;">
+            <span style='display:inline-block;margin-right:0.7em;font-size:1.1em;color:#e3cfa4;'>★</span>Put your&nbsp;<a href="https://app.fireworks.ai/settings/users/api-keys" target="_blank" style="color:#7a6ad8;font-weight:600;text-decoration:none;">Fireworks AI API Key</a>&nbsp;above
+          </li>
+          <li class="instructions-li" style="display:flex;align-items:flex-start;margin-bottom:0.5em;font-size:0.82em;font-weight:500;color:#8c5b1a;font-family:'Segoe UI',Arial,sans-serif;letter-spacing:0.01em;text-shadow:0 1px 6px #fff7;transition:transform 0.22s,box-shadow 0.22s;">
+            <span style='display:inline-block;margin-right:0.7em;font-size:1.1em;color:#e3cfa4;'>★</span>Copy & paste any article or website link
+          </li>
+          <li class="instructions-li" style="display:flex;align-items:flex-start;margin-bottom:0.5em;font-size:0.82em;font-weight:500;color:#8c5b1a;font-family:'Segoe UI',Arial,sans-serif;letter-spacing:0.01em;text-shadow:0 1px 6px #fff7;transition:transform 0.22s,box-shadow 0.22s;">
+            <span style='display:inline-block;margin-right:0.7em;font-size:1.1em;color:#e3cfa4;'>★</span>Select any style : Tweet, Paragraph or Page style
+          </li>
+          <li class="instructions-li" style="display:flex;align-items:flex-start;margin-bottom:0.5em;font-size:0.82em;font-weight:500;color:#8c5b1a;font-family:'Segoe UI',Arial,sans-serif;letter-spacing:0.01em;text-shadow:0 1px 6px #fff7;transition:transform 0.22s,box-shadow 0.22s;">
+            <span style='display:inline-block;margin-right:0.7em;font-size:1.1em;color:#e3cfa4;'>★</span>Click on summarize
+          </li>
+          <li class="instructions-li" style="display:flex;align-items:flex-start;margin-bottom:0.5em;font-size:0.82em;font-weight:500;color:#8c5b1a;font-family:'Segoe UI',Arial,sans-serif;letter-spacing:0.01em;text-shadow:0 1px 6px #fff7;transition:transform 0.22s,box-shadow 0.22s;">
+            <span style='display:inline-block;margin-right:0.7em;font-size:1.1em;color:#e3cfa4;'>★</span>Whole data from the link will be summarized
+          </li>
+        </ul>
+      </div>
+      <div style="color:#7c664a;font-size:0.95em;margin-top:1.2em;">Your API key will not be stored.</div>
+
     </div>
   </div>
 
   <div class="main-box" id="summarizerBox" style="display:none;">
+
     <h1>URL Summarizer</h1>
     <p>Paste any article or website URL below and get a quick summary using Dobby 70B.</p>
+
+    <div class="dobby-header" tabindex="0" style="display:flex;flex-direction:row;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8e9d2 0%,#fff8ec 100%);border-radius:20px;padding:1.1em 1.3em 1.1em 1.1em;margin-bottom:1.4em;box-shadow:0 2px 16px #e3cfa433;transition:transform 0.22s, box-shadow 0.22s;cursor:pointer;outline:none;max-width:420px;margin-left:auto;margin-right:auto;">
+      <div style="background:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px;margin-right:1.1em;box-shadow:0 2px 8px #e3cfa433;overflow:hidden;transition:transform 0.22s;">
+        <img src="dobby.jpg" alt="Dobby Dog Logo" style="width:48px;height:48px;object-fit:cover;border-radius:12px;" />
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;">
+        <span style="font-size:2.0em;font-weight:900;letter-spacing:0.01em;color:#e3cfa4;text-shadow:0 2px 8px #fff8;line-height:1;">DOBBY SUMMARIZER</span>
+      </div>
+    </div>
+    <p class="dobby-instruction"><strong>Paste any article or website link to summarize using Dobby 70B model.</strong></p>
+
     <div class="input-row">
       <img src="image.png" alt="Logo" />
-      <input type="url" id="input" placeholder="Paste a URL here (https://...)" autocomplete="off" required>
+      <input type="url" id="input" placeholder="Paste any link - https:" autocomplete="off" required>
     </div>
     <div class="summary-types">
       <label>
         <input type="radio" name="stype" value="tweet" checked>
-        Tweet-length
+        TWEET STYLE
       </label>
       <label>
         <input type="radio" name="stype" value="paragraph">
-        Paragraph
+        PARAGRAPH STYLE
       </label>
       <label>
         <input type="radio" name="stype" value="page">
-        Page
+        PAGE STYLE
       </label>
     </div>
     <button id="summarizeBtn">Summarize</button>
     <div class="summary-box" id="output"><span style="color:#fff7">Your summary will appear here.</span></div>
+
   </div>
   <script>
     // API key will be provided by user at runtime
     let API_KEY = null;
     const API_URL = "https://api.fireworks.ai/inference/v1/chat/completions";
     const MODEL = "accounts/sentientfoundation/models/dobby-unhinged-llama-3-3-70b-new";
+
+    // Remove API Key button logic
+    const removeBtn = document.getElementById('removeApiKeyBtn');
+    if (removeBtn) {
+      removeBtn.onclick = function() {
+        const apiInput = document.getElementById('apiKeyInput');
+        if(apiInput) apiInput.value = '';
+        API_KEY = null;
+        // Remove from localStorage if used
+        try { localStorage.removeItem('API_KEY'); } catch(e){}
+        // Optional: show feedback
+        const errDiv = document.getElementById('apiKeyError');
+        if (errDiv) {
+          errDiv.style.display = 'block';
+          errDiv.innerText = 'API key removed.';
+          setTimeout(() => { errDiv.style.display = 'none'; }, 2000);
+        }
+      }
+    }
 
     const input = document.getElementById('input');
     const output = document.getElementById('output');
@@ -216,7 +450,11 @@
     btn.onclick = async function() {
       let url = input.value.trim();
       if (!isValidUrl(url)) {
+
         output.innerHTML = "enter a valid link starting with http(s)://";
+
+        output.innerHTML = "enter a valid link";
+
         output.classList.remove('has-summary');
         return;
       }
@@ -323,5 +561,54 @@
     }
 
   </script>
+
+<style>
+#profileTwitter {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #fff;
+  color: #111;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  padding: 8px 16px;
+  font-weight: 500;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  font-family: inherit;
+  transition: transform 0.2s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+  overflow: hidden;
+  position: fixed;
+}
+#profileTwitter:hover {
+  transform: scale(1.10);
+  box-shadow: 0 4px 16px 2px rgba(29,161,242,0.15);
+}
+#profileTwitter::before {
+  content: '';
+  position: absolute;
+  left: -75%;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(29,161,242,0.25) 0%, rgba(255,255,255,0.5) 100%);
+  transform: skewX(-25deg);
+  transition: left 0.3s cubic-bezier(.4,2,.6,1);
+  pointer-events: none;
+}
+#profileTwitter:hover::before {
+  left: 130%;
+  transition: left 0.5s cubic-bezier(.4,2,.6,1);
+}
+#profileTwitter svg {
+  color: #111;
+}
+</style>
+<a href="https://x.com/morsyxbt" target="_blank" id="profileTwitter">
+  <svg width="22" height="22" viewBox="0 0 32 32" fill="none" style="margin-right:7px;vertical-align:middle;"><path fill="currentColor" d="M32 6.076a13.14 13.14 0 0 1-3.769 1.031 6.601 6.601 0 0 0 2.887-3.633 13.193 13.193 0 0 1-4.17 1.594A6.56 6.56 0 0 0 22.16 4c-3.627 0-6.563 2.936-6.563 6.564 0 .514.058 1.016.17 1.495C10.318 11.86 5.485 9.383 2.228 5.652a6.532 6.532 0 0 0-.888 3.303c0 2.277 1.159 4.287 2.92 5.465a6.52 6.52 0 0 1-2.977-.822v.083c0 3.181 2.262 5.834 5.265 6.437a6.573 6.573 0 0 1-2.971.112c.837 2.613 3.264 4.514 6.14 4.564a13.176 13.176 0 0 1-8.15 2.808c-.53 0-1.052-.03-1.57-.092a18.61 18.61 0 0 0 10.064 2.948c12.077 0 18.697-10.007 18.697-18.695 0-.285-.007-.568-.02-.85A13.282 13.282 0 0 0 32 6.076z"/></svg>
+  @Morsyxbt
+</a>
 </body>
 </html>
